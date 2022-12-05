@@ -1,0 +1,40 @@
+
+CI_ENVIRONMENT = development
+# CI_ENVIRONMENT = production
+
+#--------------------------------------------------------------------
+# DATABASE
+#--------------------------------------------------------------------
+
+database.default.hostname = localhost
+database.default.database = 'buv'
+database.default.username = 'buv-owner'
+database.default.password = 'buv-owner'
+database.default.DBDriver = MySQLi
+database.default.port = 3306
+
+#--------------------------------------------------------------------
+# LOGGER
+#--------------------------------------------------------------------
+
+logger.threshold = 4  # Crea un archivo de log en writable\logs. El threshold 4 indica solo errores
+
+#--------------------------------------------------------------------
+# CURLRequest
+#--------------------------------------------------------------------
+
+curlrequest.shareOptions = true
+
+#--------------------------------------------------------------------
+# Parámetros propios de BUV
+# (En app\Config\BUV.PHP)
+#--------------------------------------------------------------------
+buv.elasticSearchProt  = 'https'         # Protocolo de elasticsearch
+buv.elasticSearchHost  = 'localhost'     # Host de elasticsearch
+buv.elasticSearchPort  = 9200            # Puerto de elasticsearch  
+buv.elasticSearchUser  = 'elastic'       # Usuario de elasticsearch  
+buv.elasticSearchPass  = '***********'   # Password del usuario de elasticsearch
+buv.elasticSearchIndex = 'vecinos'       # Nombre del índice donde están los datos
+buv.elasticSearchPage  = 1000            # Tamaño de la página de búsqueda (performance)
+
+
