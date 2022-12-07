@@ -4,7 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class LoadDataErrorsModel extends Model
+class LoadDataErrorsModel extends BaseModel
 {
     protected $DBGroup          = 'default';
     protected $table            = 'load_data_errors';
