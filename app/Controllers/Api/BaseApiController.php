@@ -35,13 +35,16 @@ class BaseApiController extends ResourceController
      */
     public function index()
     {
-        helper('general');
-        $params = $this->request->getGet();
-
-        $result = $this->model->index($params);
-        $data['data'] = $result;
-
-        return $this->respond($data);
+        try {
+            helper('general');
+            $params = $this->request->getGet();
+    
+            $result = $this->model->index($params);
+    
+            return $this->respond($result);
+        } catch (\Throwable $th) {
+            return $this->respond(['error' => $th->getMessage()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -69,12 +72,14 @@ class BaseApiController extends ResourceController
 
         try {
 
-            if ($this->createRec($saveData) === false) {
+            $id = $this->createRec($saveData);
+
+            if ( $id === false) {
                 return $this->respond(['errors' => $this->getErrors()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
             }
-            return $this->respond(['message' => lang('General.saved')]);
+            return $this->respond(['id' => $id]);
         } catch (\Throwable $th) {
-            return $this->respond(['error' => lang('General.db.error')], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->respond(['error' => $th->getMessage()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -91,15 +96,19 @@ class BaseApiController extends ResourceController
         $updateData = $this->getRequestInput();
 
         try {
+            // Primero busco a ver si existe
+            if ( $this->model->find($id) == null )
+                return $this->respond(['error' => "NOT_FOUND"], ResponseInterface::HTTP_NOT_FOUND);;
+                
             // Para las validaciones tengo que agregar el id al array de datos
             $updateData->id = $id;
             if ($this->updateRec($id, $updateData) === false) {
                 return $this->respond(['errors' => $this->getErrors()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
             }
 
-            return $this->respond(['message' => lang('General.updated')]);
+            return $this->respond(['message' => 'OK']);
         } catch (\Throwable $th) {
-            return $this->respond(['error' => lang('General.db.error')], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->respond(['error' => $th->getMessage()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -114,13 +123,18 @@ class BaseApiController extends ResourceController
     public function delete($id = null)
     {
         try {
-            if ($this->deleteRec($id) === false) {
+            // Primero busco a ver si existe
+            if ( $this->model->find($id) == null )
+                return $this->respond(['error' => "NOT_FOUND"], ResponseInterface::HTTP_NOT_FOUND);;
+
+            $ok = $this->deleteRec($id);
+            if ( $ok === false) {
                 return $this->respond(['error' => $this->getErrors()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
             }
 
-            return $this->respond(['message' => lang('General.deleted')]);
+            return $this->respond(['message'=> 'OK']);
         } catch (\Throwable $th) {
-            return $this->respond(['error' => lang('General.db.error')], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->respond(['error' => $th->getMessage()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
