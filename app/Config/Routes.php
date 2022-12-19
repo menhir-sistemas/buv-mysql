@@ -53,3 +53,9 @@ $routes->get('/', 'Home::index');
 if (is_file(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
     require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
 }
+/**
+ * Rutas adicionales
+ */
+foreach (glob(APPPATH . 'Config/Routes/*.php') as $file) {
+	require $file;
+}

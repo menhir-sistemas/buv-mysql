@@ -4,7 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class BUVDataModel extends Model
+class BUVDataModel extends BaseModel
 {
     protected $DBGroup          = 'default';
     protected $table            = 'buv_data';
