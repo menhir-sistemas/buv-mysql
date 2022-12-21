@@ -169,9 +169,9 @@ class BaseApiController extends ResourceController
      *
      * @param mixed $data
      *
-     * @return void
+     * @return int
      */
-    public function createRec($data)
+    public function createRec($data) : int
     {
         return $this->model->insert($data);
     }

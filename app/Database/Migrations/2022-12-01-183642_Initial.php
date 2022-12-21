@@ -53,6 +53,7 @@ class Initial extends Migration
                 'telefonoLaboral'   => ['type' =>  'text', 'null' => true],
                 'tipoDeDocumento'   => ['type' =>  'text', 'null' => true],
                 'torre'             => ['type' =>  'text', 'null' => true],
+                'username'          => ['type' =>  'text', 'null' => false],
                 'verificado'        => ['type' =>  'text', 'null' => true],
                 'created_at'        => ['type' => 'datetime', 'null' => false],
                 'updated_at'        => ['type' => 'datetime', 'null' => true]

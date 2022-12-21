@@ -37,4 +37,13 @@ buv.elasticSearchPass  = '***********'   # Password del usuario de elasticsearch
 buv.elasticSearchIndex = 'vecinos'       # Nombre del índice donde están los datos
 buv.elasticSearchPage  = 1000            # Tamaño de la página de búsqueda (performance)
 
+#--------------------------------------------------------------------
+# Parámetros del keycloak
+# (En app\Config\Keycloak.PHP)
+#--------------------------------------------------------------------
+keycloak.realm = 'BUV';
+keycloak.realmAdminName = '';
+keycloak.realmAdminPass = '';
+keycloak.adminClient ='';
+keycloak.baseUri='';
 
