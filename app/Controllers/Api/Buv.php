@@ -15,6 +15,8 @@ class Buv extends BaseApiController
 
     private $kcClient = null;
 
+    private $kcPassword = null;
+
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         $cfg = Config('Keycloak');
@@ -82,6 +84,12 @@ class Buv extends BaseApiController
         foreach ($reqFields as $f) {
             if (! array_key_exists($f,$data) )
                 $data[$f] = "";
+        }
+
+        // Si vino el campo *password*, no lo uso para update, sino en la *reset-password*
+        if (array_key_exists('password',$data) ) {
+            $this->kcPassword = $data['password'];
+            unset($data['password']);
         }
 
         return $data;
@@ -198,7 +206,7 @@ class Buv extends BaseApiController
      * @return void
      */
     public function updateRec($id, $data){
-        $data = (array) $data;
+        $data = $this->sanitize((array)$data);
         $oldData = $this->model->find($id);
         $data['_id'] = $oldData['_id'];
 
@@ -209,6 +217,12 @@ class Buv extends BaseApiController
         
         return parent::updateRec($id,$data);
 
+    }
+
+    private function updateKCCredentials($id) {
+        if ( $this->kcPassword == null ) 
+            return;
+        //$this->kcClient->resetUserPassword()
     }
 
 
