@@ -17,16 +17,18 @@ class Buv extends BaseApiController
 
     private $kcPassword = null;
 
+    private $cfg;
+
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
-        $cfg = Config('Keycloak');
+        $this->cfg = Config('Keycloak');
         $this->kcClient = KeycloakClient::factory([
-            'realm'     => $cfg->realm,
-            'username'  => $cfg->realmAdminName,
-            'password'  => $cfg->realmAdminPass,
-            'client_id' => $cfg->adminClient,
-            'baseUri'   => $cfg->baseUri,
-            'verify'    => $cfg->verify
+            'realm'     => $this->cfg->realm,
+            'username'  => $this->cfg->realmAdminName,
+            'password'  => $this->cfg->realmAdminPass,
+            'client_id' => $this->cfg->adminClient,
+            'baseUri'   => $this->cfg->baseUri,
+            'verify'    => $this->cfg->verify
         ]);
         parent::initController($request, $response, $logger);
     }
@@ -133,7 +135,11 @@ class Buv extends BaseApiController
         if ( array_key_exists('errorMessage',$retVal) )
             throw new Exception(($retVal['errorMessage']));
 
-        return $this->getKCUser($data['username']);
+        $kcUser =  $this->getKCUser($data['username']);
+
+        $this->updateKCCredentials($kcUser['id']);
+
+        return $kcUser;
                 
     }
 
@@ -214,15 +220,44 @@ class Buv extends BaseApiController
 
         $this->updateKCUSer($userData);
         $data['id'] = $id;
+
+        if ( $this->kcPassword != null) {
+            $this->updateKCCredentials($data['_id']);
+        }
         
         return parent::updateRec($id,$data);
 
     }
 
     private function updateKCCredentials($id) {
-        if ( $this->kcPassword == null ) 
-            return;
-        //$this->kcClient->resetUserPassword()
+        // Si no se pasó password, pido reset de credenciales
+        if ( $this->kcPassword == null) {
+            $retVal = $this->kcClient->executeActionsEmail([
+                'realm'        => $this->cfg->realm,
+                'id'           => $id,
+                'client_id'    => $this->cfg->adminClient,
+                'lifespan'     => 60*12,
+                'redirect_uri' => null,
+                'actions'      => [
+                    'VERIFY_EMAIL', 
+                    'UPDATE_PASSWORD'
+                ],
+            ]);
+        } else {
+            $retVal = $this->kcClient->resetUserPassword([
+                'id'           => $id,
+                'realm'        => $this->cfg->realm,
+                'cred'         => [ 
+                    'type'       => 'password', 
+                    'temporary'  => false, 
+                    'value'      => $this->kcPassword
+                ]
+            ]);
+        }
+
+        if ( array_key_exists('errorMessage',$retVal) )
+            throw new Exception(($retVal['errorMessage']));
+
     }
 
 
