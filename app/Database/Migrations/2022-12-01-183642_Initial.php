@@ -65,7 +65,7 @@ class Initial extends Migration
 
         $this
             ->forge
-            ->createTable('buv_data');
+            ->createTable('buv_data',false,['ENGINE' => 'InnoDB']);
     }
 
     public function down()
