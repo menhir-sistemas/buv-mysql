@@ -260,5 +260,13 @@ class Buv extends BaseApiController
 
     }
 
+    
+  
+    public function getUserInfo() {
+        return $this->respond([
+            'userInfo' => $this->me
+        ]);
+    }
+
 
 }

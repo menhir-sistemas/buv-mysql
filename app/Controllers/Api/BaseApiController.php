@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 use Psr\Log\LoggerInterface;
 
+
 /**
  * BaseApiController.
  *
@@ -27,6 +28,22 @@ class BaseApiController extends ResourceController
     {
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
+
+        helper(['general','jwt']);
+
+        try {
+            // El header de authorization 
+            $authHeader = $request->getHeader('Authorization')->getValueLine();
+            $this->me = whoAmI($authHeader);
+        } catch (\Throwable $th) {
+            $this->me = null;
+            if ( Config('Keycloak')->enforceJWT ) {
+                throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+            }
+        }
+
+        $xx = $this->isRealmAdmin();
+
     }
 
     /**
@@ -37,14 +54,11 @@ class BaseApiController extends ResourceController
     public function index()
     {
         try {
-
-
             $params = $this->request->getGet();
     
             $result = $this->model->index($params);
     
-            //return $this->respond($result);
-            return $this->respond($this->me);
+            return $this->respond($result);
         } catch (\Throwable $th) {
             return $this->respond(['error' => $th->getMessage()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -240,5 +254,28 @@ class BaseApiController extends ResourceController
         }
 
         return $retVal;
+    }
+
+    /**
+     * Chequea si el usuario logeado tiene el rol "realm-admin"
+     *
+     * @return boolean
+     */
+    protected function isRealmAdmin() {
+        if ( !Config('Keycloak')->enforceJWT ) {
+            return true;
+        }
+
+        try {
+            // HAy que hacer esto porque el nombre de la variable tiene un "-"
+
+            $data = get_object_vars($this->me->resource_access);
+            $realmManagement = $data['realm-management'];
+            $roles = $realmManagement->roles;
+            return in_array("realm-admin", $roles);
+
+        } catch (\Throwable $th) {
+            return false;
+        }
     }
 }
