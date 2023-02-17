@@ -53,4 +53,11 @@ class Keycloak extends BaseConfig
      * @var boolean
      */
     public $verify = false;
+
+    /**
+     * Para el desarrollo no exige JWT (en breve desaparece)
+     *
+     * @var boolean
+     */
+    public $enforceJWT = true;
 }

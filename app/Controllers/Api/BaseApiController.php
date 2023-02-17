@@ -18,6 +18,7 @@ class BaseApiController extends ResourceController
     use ResponseTrait;
 
     protected $format = 'json';
+    protected $me = null;
 
     /**
      * Constructor.
@@ -36,12 +37,14 @@ class BaseApiController extends ResourceController
     public function index()
     {
         try {
-            helper('general');
+
+
             $params = $this->request->getGet();
     
             $result = $this->model->index($params);
     
-            return $this->respond($result);
+            //return $this->respond($result);
+            return $this->respond($this->me);
         } catch (\Throwable $th) {
             return $this->respond(['error' => $th->getMessage()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
         }
