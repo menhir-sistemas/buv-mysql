@@ -24,10 +24,6 @@ class OSCity extends Migration
     {
         $this
             ->forge
-            ->dropKey('buv_data','id_oscity', false);
-
-        $this
-            ->forge
             ->dropColumn('buv_data','id_oscity');
     }
 }

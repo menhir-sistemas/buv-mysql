@@ -13,8 +13,7 @@ class Direcciones extends Migration
         ->addField([
             'id'                => ['type' => 'INT', 'auto_increment' => true],
             'descripcion'       => ['type' => 'TEXT', 'null' => false],
-            'created_at'        => ['type' => 'datetime', 'null' => false],
-            'updated_at'        => ['type' => 'datetime', 'null' => true]
+            'created_at'        => ['type' => 'datetime', 'null' => false]
         ]);
 
         $this
