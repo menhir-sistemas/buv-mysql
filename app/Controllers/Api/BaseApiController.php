@@ -19,6 +19,7 @@ class BaseApiController extends ResourceController
     use ResponseTrait;
 
     protected $format = 'json';
+    protected $whoami = null;
     protected $me = null;
 
     /**
@@ -34,7 +35,7 @@ class BaseApiController extends ResourceController
         try {
             // El header de authorization 
             $authHeader = $request->getHeader('Authorization')->getValueLine();
-            $this->me = whoAmI($authHeader);
+            service('whoami')->setHeader($authHeader);
         } catch (\Throwable $th) {
             $this->me = null;
             if ( Config('Keycloak')->enforceJWT ) {
@@ -42,7 +43,7 @@ class BaseApiController extends ResourceController
             }
         }
 
-        $xx = $this->isRealmAdmin();
+        $xx = service('whoami')->isRealmAdmin();
 
     }
 
@@ -254,28 +255,5 @@ class BaseApiController extends ResourceController
         }
 
         return $retVal;
-    }
-
-    /**
-     * Chequea si el usuario logeado tiene el rol "realm-admin"
-     *
-     * @return boolean
-     */
-    protected function isRealmAdmin() {
-        if ( !Config('Keycloak')->enforceJWT ) {
-            return true;
-        }
-
-        try {
-            // HAy que hacer esto porque el nombre de la variable tiene un "-"
-
-            $data = get_object_vars($this->me->resource_access);
-            $realmManagement = $data['realm-management'];
-            $roles = $realmManagement->roles;
-            return in_array("realm-admin", $roles);
-
-        } catch (\Throwable $th) {
-            return false;
-        }
     }
 }

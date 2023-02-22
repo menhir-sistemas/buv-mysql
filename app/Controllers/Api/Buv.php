@@ -263,9 +263,8 @@ class Buv extends BaseApiController
     
   
     public function getUserInfo() {
-        return $this->respond([
-            'userInfo' => $this->me
-        ]);
+        $xx = service('whoami')->isRealmAdmin();
+        return $this->respond(["userInfo" =>service('whoami')->getUSerInfo()]);
     }
 
 

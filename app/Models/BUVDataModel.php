@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Controllers\Api\Buv;
 use CodeIgniter\Model;
 
 class BUVDataModel extends BaseModel
@@ -59,5 +60,23 @@ class BUVDataModel extends BaseModel
         }
 
         return $this->insert($newData);
+    }
+
+    /**
+     * Busca un registro por id de keycloak
+     *
+     * @param string $kcId
+     * @return void
+     */
+    public static function getDataByKCId(string $kcId) {
+        $model = new BUVDataModel();
+
+        $resp = $model->where('_id',$kcId)->findAll();
+
+        if ( count($resp) == 0 )
+            return null;
+
+        return $resp[0];
+
     }
 }
