@@ -23,6 +23,13 @@ class BaseApiController extends ResourceController
     protected $me = null;
 
     /**
+     * Indica si las operaciones REST mutables requieren acceso de realmAdmin
+     *
+     * @var boolean
+     */
+    protected bool $requiresRootForMutable = true;
+
+    /**
      * Constructor.
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
@@ -42,9 +49,6 @@ class BaseApiController extends ResourceController
                 throw \App\Exceptions\HTTPCustomException::forUnauthorized();
             }
         }
-
-        $xx = service('whoami')->isRealmAdmin();
-
     }
 
     /**
@@ -54,6 +58,9 @@ class BaseApiController extends ResourceController
      */
     public function index()
     {
+        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+
         try {
             $params = $this->request->getGet();
     
@@ -75,6 +82,9 @@ class BaseApiController extends ResourceController
      */
     public function show($id = null)
     {
+        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+
         return $this->respond($this->model->find($id));
     }
 
@@ -86,6 +96,9 @@ class BaseApiController extends ResourceController
      */
     public function create()
     {
+        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+
         $saveData = $this->getRequestInput();
 
         try {
@@ -111,6 +124,9 @@ class BaseApiController extends ResourceController
      */
     public function update($id = null)
     {
+        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+
         $updateData = $this->getRequestInput();
 
         try {
@@ -140,6 +156,9 @@ class BaseApiController extends ResourceController
      */
     public function delete($id = null)
     {
+        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+
         try {
             // Primero busco a ver si existe
             if ( $this->model->find($id) == null )
@@ -163,6 +182,9 @@ class BaseApiController extends ResourceController
      */
     public function new()
     {
+        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+            
         $retVal = (object) $this->newRec();
 
         return $this->respond($retVal, ResponseInterface::HTTP_OK);

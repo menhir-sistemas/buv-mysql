@@ -10,11 +10,6 @@ namespace App\Libraries;
 class Requester {
 
     /**
-     * El rol para chequear si es administrador del reino
-     */
-    private const REQ_REALM_ADMIN_ROLE = "realm-management";
-
-    /**
      * El usuario en Keycloak
      *
      * @var array
@@ -35,7 +30,11 @@ class Requester {
             // Elimino el bearer
             $realToken= str_ireplace('bearer ','',$authHeader);
             $this->kcUser = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $realToken)[1]))),true);
-            $this->buvUser = \App\Models\BUVDataModel::getDataByKCId($this->kcUser['sub']);
+            try {
+                $this->buvUser = \App\Models\BUVDataModel::getDataByKCId($this->kcUser['sub']);
+            } catch (\Throwable $th) {
+                $this->buvUser = [];
+            }
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -69,6 +68,7 @@ class Requester {
     }
 
     public function getUserInfo() {
+        if ( $this->buvUser == null )
         return $this->buvUser;
     }
 
@@ -83,7 +83,7 @@ class Requester {
         }
 
         try {
-            $roles = $this->kcUser['resource_access']['account']['roles'];
+            $roles = $this->kcUser['resource_access']['realm-management']['roles'];
             return in_array("realm-admin", $roles);
         } catch (\Throwable $th) {
             return false;
