@@ -45,9 +45,6 @@ class BaseApiController extends ResourceController
             service('whoami')->setHeader($authHeader);
         } catch (\Throwable $th) {
             $this->me = null;
-            if ( Config('Keycloak')->enforceJWT ) {
-                throw \App\Exceptions\HTTPCustomException::forUnauthorized();
-            }
         }
     }
 
@@ -58,8 +55,12 @@ class BaseApiController extends ResourceController
      */
     public function index()
     {
-        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
-            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+        try {
+            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+                return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
+        } catch (\Throwable $th) {
+            return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
 
         try {
             $params = $this->request->getGet();
@@ -82,8 +83,12 @@ class BaseApiController extends ResourceController
      */
     public function show($id = null)
     {
-        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
-            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+        try {
+            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+                return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
+        } catch (\Throwable $th) {
+            return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
 
         return $this->respond($this->model->find($id));
     }
@@ -96,8 +101,12 @@ class BaseApiController extends ResourceController
      */
     public function create()
     {
-        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
-            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+        try {
+            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+                return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
+        } catch (\Throwable $th) {
+            return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
 
         $saveData = $this->getRequestInput();
 
@@ -124,8 +133,12 @@ class BaseApiController extends ResourceController
      */
     public function update($id = null)
     {
-        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
-            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+        try {
+            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+                return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
+        } catch (\Throwable $th) {
+            return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
 
         $updateData = $this->getRequestInput();
 
@@ -156,8 +169,12 @@ class BaseApiController extends ResourceController
      */
     public function delete($id = null)
     {
-        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
-            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+        try {
+            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+                return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
+        } catch (\Throwable $th) {
+            return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
 
         try {
             // Primero busco a ver si existe
@@ -182,8 +199,12 @@ class BaseApiController extends ResourceController
      */
     public function new()
     {
-        if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
-            throw \App\Exceptions\HTTPCustomException::forUnauthorized();
+        try {
+            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() )
+                return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
+        } catch (\Throwable $th) {
+            return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
             
         $retVal = (object) $this->newRec();
 
