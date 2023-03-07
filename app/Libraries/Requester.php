@@ -68,8 +68,8 @@ class Requester {
     }
 
     public function getUserInfo() {
-        if ( $this->buvUser == null )
-        return $this->buvUser;
+        if ( !$this->buvUser == null )
+            return $this->buvUser;
     }
 
     /**
