@@ -89,4 +89,57 @@ class Requester {
             return false;
         }
     }
+
+    /**
+     * Controla si un usuario tiene un determinado rol
+     *
+     * @param string $role
+     * @return boolean
+     */
+    private function hasRole($role) {
+        if ( !Config('Keycloak')->enforceJWT ) {
+            return true;
+        }
+
+        try {
+            $roles = $this->kcUser['realm_access']['roles'];
+            return in_array($role, $roles);
+        } catch (\Throwable $th) {
+            return false;
+        }
+
+    }
+
+    /**
+     * Chequea si el usuario logeado tiene el rol "buv-get"
+     *
+     * @return boolean
+     */
+    public function canGet() {
+        return $this->hasRole("buv-get");
+    }
+    /**
+     * Chequea si el usuario logeado tiene el rol "buv-post"
+     *
+     * @return boolean
+     */
+    public function canPost() {
+        return $this->hasRole("buv-post");
+    }
+    /**
+     * Chequea si el usuario logeado tiene el rol "buv-put"
+     *
+     * @return boolean
+     */
+    public function canPut() {
+        return $this->hasRole("buv-put");
+    }
+    /**
+     * Chequea si el usuario logeado tiene el rol "buv-delete"
+     *
+     * @return boolean
+     */
+    public function canDelete() {
+        return $this->hasRole("buv-delete");
+    }
 }

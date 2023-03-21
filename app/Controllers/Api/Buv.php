@@ -261,7 +261,7 @@ class Buv extends BaseApiController
     }
 
     public function getUserInfo() {
-        return $this->respond(["userInfo" =>service('whoami')->getUSerInfo()]);
+        return $this->respond(["userInfo" =>service('whoami')->getUserInfo()]);
     }
 
 }
