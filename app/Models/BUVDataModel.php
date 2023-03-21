@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Controllers\Api\Buv;
-use CodeIgniter\Model;
-
 class BUVDataModel extends BaseModel
 {
     protected $DBGroup          = 'default';
@@ -37,7 +34,7 @@ class BUVDataModel extends BaseModel
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
-    protected $afterFind      = [];
+    protected $afterFind      = [ 'addDomicilios' ];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
@@ -79,4 +76,26 @@ class BUVDataModel extends BaseModel
         return $resp[0];
 
     }
+
+    public function addDomicilios($data) {
+
+        if ( $data['method'] === 'findAll' ) {
+            for ($i=0; $i < count($data['data']); $i++) { 
+                $id = $data['data'][$i]['id'];
+                $data['data'][$i]['domicilios'] = $this->getDomicilios($id);
+            }
+        } else {
+            $data['data']['domicilios'] = $this->getDomicilios($data['id']);
+        }
+
+
+        return $data;
+
+    }
+
+    private function getDomicilios($id) {
+        $model = new BuvDomicilioModel();
+        return $model->where('idVecino',$id)->findAll();
+    }
+
 }
