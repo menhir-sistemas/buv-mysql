@@ -56,16 +56,15 @@
 
         function initKeycloak() {
             keycloak = new Keycloak({
-                /*
                 url: "https://ssotst.vicentelopez.gov.ar/",
                 realm: "BUV",
                 clientId: "dev-client",
                 cors: true,
-                */
+                /*
                 url: "https://kc.menhir.com.ar/",
                 realm: "menhir",
                 clientId: "dev-client",
-                cors: true,
+                cors: true,*/
             });
             keycloak
                 .init({

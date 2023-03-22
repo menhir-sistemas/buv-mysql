@@ -102,7 +102,7 @@ class BaseApiController extends ResourceController
     public function create()
     {
         try {
-            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() && !service('whoami')->canPost() )
+            if ( $this->requiresRootForMutable && !service('whoami')->canPost() )
                 return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
         } catch (\Throwable $th) {
             return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
@@ -134,7 +134,7 @@ class BaseApiController extends ResourceController
     public function update($id = null)
     {
         try {
-            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() && !service('whoami')->canPut())
+            if ( $this->requiresRootForMutable && !service('whoami')->canPut())
                 return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
         } catch (\Throwable $th) {
             return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
@@ -170,7 +170,7 @@ class BaseApiController extends ResourceController
     public function delete($id = null)
     {
         try {
-            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() && !service('whoami')->canDelete())
+            if ( $this->requiresRootForMutable && !service('whoami')->canDelete())
                 return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
         } catch (\Throwable $th) {
             return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
@@ -200,7 +200,7 @@ class BaseApiController extends ResourceController
     public function new()
     {
         try {
-            if ( $this->requiresRootForMutable && !service('whoami')->isrealmAdmin() && !service('whoami')->canGet())
+            if ( $this->requiresRootForMutable && !service('whoami')->canGet())
                 return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
         } catch (\Throwable $th) {
             return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
