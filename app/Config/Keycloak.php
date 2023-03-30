@@ -60,4 +60,11 @@ class Keycloak extends BaseConfig
      * @var boolean
      */
     public $enforceJWT = true;
+
+    /**
+     * Clave publica del reino (validación JWT)
+     *
+     * @var string
+     */
+    public $publicKey = '';
 }

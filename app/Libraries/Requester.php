@@ -2,6 +2,9 @@
 
 namespace App\Libraries;
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
 /**
  * Singleton para discriminar quien hace los requests
  * Toma el id del token que viene en el header Authorization
@@ -23,51 +26,51 @@ class Requester {
      */
     private array $buvUser;
 
-    public function setHeader(string $authHeader){
-        $this->checkValidToken($authHeader);
-
+    public function setHeader(string $authHeader) {
         try {
-            // Elimino el bearer
-            $realToken= str_ireplace('bearer ','',$authHeader);
-            $this->kcUser = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $realToken)[1]))),true);
+            $this->kcUser  = $this->checkValidToken($authHeader);
             try {
                 $this->buvUser = \App\Models\BUVDataModel::getDataByKCId($this->kcUser['sub']);
             } catch (\Throwable $th) {
                 $this->buvUser = [];
             }
         } catch (\Throwable $th) {
+            // TODO: 401!!
             throw $th;
-        }
-    
+        }    
     }
 
-    protected function checkValidToken($authHeader) {
+    protected function checkValidToken($header) {
         $cfg = Config('Keycloak');
-        $kcURL = "$cfg->baseUri/realms/$cfg->realm/protocol/openid-connect/";
-    
-        $client = new \GuzzleHttp\Client(['base_uri' => $kcURL]);
-    
-        $res = $client->request('GET', 'userinfo', [
-            'allow_redirects' => false,
-            'verify'          => false,
-            'synchronous'     => true,
-            'stream'          => true,
-            'headers'         => [
-                'Authorization' => $authHeader
-            ]
-        ]);
-        $body = $res->getBody();
-    
-        $data = "";
-        while (!$body->eof()) {
-            $data .= $body->read(1024);
+
+        $pk = $cfg->publicKey;
+
+        // extract the token from the header
+        if(!empty($header)) {
+            if (preg_match('/Bearer\s(\S+)/', $header, $matches)) {
+                $token = $matches[1];
+            }
         }
-    
-        // TODO: chequear retorno
+  
+        // check if token is null or empty
+        if(is_null($token) || empty($token)) {
+            // 401!
+            return null;
+        }
+  
+        try {
+            return (array) JWT::decode($token, new Key("-----BEGIN PUBLIC KEY-----\n$pk\n-----END PUBLIC KEY-----\n", 'RS256'));
+        } catch (\Exception $ex) {
+            // 401
+            return null;
+        }
+
+        return null;
     
     }
 
     public function getUserInfo() {
+        return [];
         if ( !$this->buvUser == null )
             return $this->buvUser;
     }
