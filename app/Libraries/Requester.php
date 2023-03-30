@@ -70,7 +70,6 @@ class Requester {
     }
 
     public function getUserInfo() {
-        return [];
         if ( !$this->buvUser == null )
             return $this->buvUser;
     }
