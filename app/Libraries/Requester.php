@@ -104,7 +104,8 @@ class Requester {
         }
 
         try {
-            $roles = $this->kcUser['realm_access']['roles'];
+            $ra = (array) $this->kcUser['realm_access'];
+            $roles = $ra['roles'];
             return in_array($role, $roles);
         } catch (\Throwable $th) {
             return false;
