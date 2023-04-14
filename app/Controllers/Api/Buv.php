@@ -77,15 +77,17 @@ class Buv extends BaseApiController
         return $retVal[0];
     }
 
-    private function sanitize($data) {
-        $reqFields = [
-            'nombre',
-            'apellido',
-            'correoElectronico'
-        ];
-        foreach ($reqFields as $f) {
-            if (! array_key_exists($f,$data) )
-                $data[$f] = "";
+    private function sanitize($data,$checkRec=true) {
+        if ( $checkRec ){
+            $reqFields = [
+                'nombre',
+                'apellido',
+                'correoElectronico'
+            ];
+            foreach ($reqFields as $f) {
+                if (! array_key_exists($f,$data) )
+                    $data[$f] = "";
+            }   
         }
 
         // Si vino el campo *password*, no lo uso para update, sino en la *reset-password*
@@ -212,7 +214,7 @@ class Buv extends BaseApiController
      * @return void
      */
     public function updateRec($id, $data){
-        $data = $this->sanitize((array)$data);
+        $data = $this->sanitize((array)$data,false);
         $oldData = $this->model->find($id);
         $data['_id'] = $oldData['_id'];
 
