@@ -234,7 +234,7 @@ class BaseApiController extends ResourceController
      */
     public function createRec($data) : int
     {
-        return $this->model->insert($data);
+        return $this->model->createRec($data);
     }
 
     /**
@@ -249,7 +249,7 @@ class BaseApiController extends ResourceController
      */
     public function updateRec($id, $data)
     {
-        return $this->model->update($id, $data);
+        return $this->model->updateRec($id, $data);
     }
 
     /**
@@ -263,7 +263,7 @@ class BaseApiController extends ResourceController
      */
     public function deleteRec($id)
     {
-        return $this->model->delete($id);
+        return $this->model->deleteRec($id);
     }
     /**
      * getRequestInput Manejo del post, tanto json como form.

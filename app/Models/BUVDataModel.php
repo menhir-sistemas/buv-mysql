@@ -31,6 +31,7 @@ class BUVDataModel extends BaseModel
     protected $allowCallbacks = true;
     protected $beforeInsert   = [];
     protected $afterInsert    = [];
+
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
@@ -97,5 +98,85 @@ class BUVDataModel extends BaseModel
         $model = new BuvDomicilioModel();
         return $model->where('idVecino',$id)->findAll();
     }
+
+    /**
+     * createRec.
+     *
+     * Un nuevo registro
+     *
+     * @param mixed $data
+     *
+     * @return void
+     */
+    public function createRec($data)
+    {
+        $domicilios = null;
+        // Extraigo los domicilios
+        if ( array_key_exists( 'domicilios',$data)){
+            $domicilios = $data['domicilios'];
+            unset($data['domicilios']);
+        }
+        $id = parent::createRec($data);
+
+        if ( $domicilios !== null ){
+            // Inserto los domicilios
+            BuvDomicilioModel::saveArrayOfDomicilios($id,$domicilios);
+        }
+
+        return $id;
+    }
+
+    /**
+     * Override
+     *
+     * updateRec.
+     *
+     * Update de un registro
+     *
+     * @param mixed $id
+     * @param mixed $data
+     *
+     * @return void
+     */
+    public function updateRec($id, $data)
+    {
+
+        $domicilios = null;
+        // Extraigo los domicilios
+        if ( array_key_exists( 'domicilios',$data)){
+            $domicilios = $data['domicilios'];
+            unset($data['domicilios']);
+        }
+
+
+        $retVal = parent::updateRec($id,$data);
+
+        if ( $domicilios !== null ){
+            // Actualizo los domicilios
+            BuvDomicilioModel::saveArrayOfDomicilios($id,$domicilios);
+        }
+
+        return $retVal;
+    }
+
+    /**
+     * deleteRec.
+     *
+     * Borrado de un registro
+     *
+     * @param mixed $id
+     *
+     * @return void
+     */
+    public function deleteRec($id)
+    {
+        BuvDomicilioModel::saveArrayOfDomicilios($id,[]);
+        return $this->delete($id);
+    }
+
+
+    /*
+
+    */
 
 }

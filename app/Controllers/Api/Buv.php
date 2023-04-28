@@ -226,7 +226,7 @@ class Buv extends BaseApiController
         if ( $this->kcPassword != null) {
             $this->updateKCCredentials($data['_id']);
         }
-        
+      
         return parent::updateRec($id,$data);
 
     }
