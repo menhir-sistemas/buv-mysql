@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use CodeIgniter\Model;
-
-class BUVDataModel extends Model
+class BUVDataModel extends BaseModel
 {
     protected $DBGroup          = 'default';
     protected $table            = 'buv_data';
@@ -33,10 +31,11 @@ class BUVDataModel extends Model
     protected $allowCallbacks = true;
     protected $beforeInsert   = [];
     protected $afterInsert    = [];
+
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
-    protected $afterFind      = [];
+    protected $afterFind      = [ 'addDomicilios' ];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
@@ -60,4 +59,124 @@ class BUVDataModel extends Model
 
         return $this->insert($newData);
     }
+
+    /**
+     * Busca un registro por id de keycloak
+     *
+     * @param string $kcId
+     * @return void
+     */
+    public static function getDataByKCId(string $kcId) {
+        $model = new BUVDataModel();
+
+        $resp = $model->where('_id',$kcId)->findAll();
+
+        if ( count($resp) == 0 )
+            return null;
+
+        return $resp[0];
+
+    }
+
+    public function addDomicilios($data) {
+
+        if ( $data['method'] === 'findAll' ) {
+            for ($i=0; $i < count($data['data']); $i++) { 
+                $id = $data['data'][$i]['id'];
+                $data['data'][$i]['domicilios'] = $this->getDomicilios($id);
+            }
+        } else {
+            $data['data']['domicilios'] = $this->getDomicilios($data['id']);
+        }
+
+
+        return $data;
+
+    }
+
+    private function getDomicilios($id) {
+        $model = new BuvDomicilioModel();
+        return $model->where('idVecino',$id)->findAll();
+    }
+
+    /**
+     * createRec.
+     *
+     * Un nuevo registro
+     *
+     * @param mixed $data
+     *
+     * @return void
+     */
+    public function createRec($data)
+    {
+        $domicilios = null;
+        // Extraigo los domicilios
+        if ( array_key_exists( 'domicilios',$data)){
+            $domicilios = $data['domicilios'];
+            unset($data['domicilios']);
+        }
+        $id = parent::createRec($data);
+
+        if ( $domicilios !== null ){
+            // Inserto los domicilios
+            BuvDomicilioModel::saveArrayOfDomicilios($id,$domicilios);
+        }
+
+        return $id;
+    }
+
+    /**
+     * Override
+     *
+     * updateRec.
+     *
+     * Update de un registro
+     *
+     * @param mixed $id
+     * @param mixed $data
+     *
+     * @return void
+     */
+    public function updateRec($id, $data)
+    {
+
+        $domicilios = null;
+        // Extraigo los domicilios
+        if ( array_key_exists( 'domicilios',$data)){
+            $domicilios = $data['domicilios'];
+            unset($data['domicilios']);
+        }
+
+
+        $retVal = parent::updateRec($id,$data);
+
+        if ( $domicilios !== null ){
+            // Actualizo los domicilios
+            BuvDomicilioModel::saveArrayOfDomicilios($id,$domicilios);
+        }
+
+        return $retVal;
+    }
+
+    /**
+     * deleteRec.
+     *
+     * Borrado de un registro
+     *
+     * @param mixed $id
+     *
+     * @return void
+     */
+    public function deleteRec($id)
+    {
+        BuvDomicilioModel::saveArrayOfDomicilios($id,[]);
+        return $this->delete($id);
+    }
+
+
+    /*
+
+    */
+
 }

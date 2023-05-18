@@ -4,10 +4,10 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class LoadDataErrorsModel extends BaseModel
+class BuvDomicilioModel extends Model
 {
     protected $DBGroup          = 'default';
-    protected $table            = 'load_data_errors';
+    protected $table            = 'buv_domicilio';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
@@ -20,8 +20,8 @@ class LoadDataErrorsModel extends BaseModel
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
-    protected $updatedField  = '';
-    protected $deletedField  = '';
+    protected $updatedField  = 'updated_at';
+    protected $deletedField  = 'deleted_at';
 
     // Validation
     protected $validationRules      = [];
@@ -39,4 +39,29 @@ class LoadDataErrorsModel extends BaseModel
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    /**
+     * saveArrayOfDomicilios
+     * 
+     * Graba los (posiblemente nuevos) domicilios en la base de datos
+     *
+     * @param int $owner El id del vecino
+     * @param array $domicilios Los domicilios
+     * @return void
+     */
+    public static function saveArrayOfDomicilios($owner, $domicilios){
+
+        $model = new BuvDomicilioModel();
+        
+        // Borro los domicilios anteriores
+        $x = $model->where('idVecino',$owner)->delete();
+
+        // Inserto lo que me llegó
+        foreach ($domicilios as $dom) {
+            $dom['idVecino'] = $owner;
+            $model->insert($dom);
+        }
+
+
+    }
 }

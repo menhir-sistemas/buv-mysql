@@ -23,6 +23,7 @@ class Filters extends BaseConfig
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
+        'jwt'           => \App\Filters\JWT::class,
     ];
 
     /**
@@ -38,7 +39,7 @@ class Filters extends BaseConfig
             // 'invalidchars',
         ],
         'after' => [
-            'toolbar',
+            //'toolbar',
             // 'honeypot',
             // 'secureheaders',
         ],
@@ -68,5 +69,9 @@ class Filters extends BaseConfig
      *
      * @var array
      */
-    public $filters = [];
+    public $filters = [
+        'before' => [
+            'api/*'
+        ]
+    ];
 }
