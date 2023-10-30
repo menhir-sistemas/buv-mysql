@@ -106,6 +106,7 @@ class Requester {
         try {
             $ra = (array) $this->kcUser['realm_access'];
             $roles = $ra['roles'];
+            die($this->userSub());
             return in_array($role, $roles);
         } catch (\Throwable $th) {
             return false;
@@ -144,5 +145,28 @@ class Requester {
      */
     public function canDelete() {
         return $this->hasRole("buv-delete");
+    }
+
+    /**
+     * Devuelve el login del usuario conectado
+     * nulo si hubo algún error
+     */
+    public function userName() {
+        try {
+            return $this->kcUser['preferred_username'];
+        } catch (\Throwable $th) {
+            return null;
+        }
+    }
+    /**
+     * Devuelve el GUI del usuario conectado
+     * nulo si hubo algún error
+     */
+    public function userSub() {
+        try {
+            return $this->kcUser['sub'];
+        } catch (\Throwable $th) {
+            return null;
+        }
     }
 }
