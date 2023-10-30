@@ -4,7 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Logs extends Model
+class LogsModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'buv_logs';

@@ -183,7 +183,7 @@ class BUVDataModel extends BaseModel
     public function deleteRec($id)
     {
         BuvDomicilioModel::saveArrayOfDomicilios($id,[]);
-        return $this->delete($id);
+        return parent::deleteRec($id);
     }
 
 

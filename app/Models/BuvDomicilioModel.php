@@ -61,7 +61,7 @@ class BuvDomicilioModel extends BaseModel
         $model = new BuvDomicilioModel();
         
         // Borro los domicilios anteriores
-        $x = $model->where('idVecino',$owner)->delete();
+        $model->where('idVecino',$owner)->delete();
 
         // Inserto lo que me llegó
         foreach ($domicilios as $dom) {
