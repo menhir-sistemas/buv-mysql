@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use CodeIgniter\Model;
+use CodeIgniter\Database\ConnectionInterface;
+use CodeIgniter\Validation\ValidationInterface;
 
-class BuvDomicilioModel extends Model
+class BuvDomicilioModel extends BaseModel
 {
     protected $DBGroup          = 'default';
     protected $table            = 'buv_domicilio';
@@ -12,7 +13,7 @@ class BuvDomicilioModel extends Model
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = false;
     protected $allowedFields    = [];
 
@@ -40,6 +41,12 @@ class BuvDomicilioModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+
+    public function __construct(ConnectionInterface &$db = null, ValidationInterface $validation = null)
+    {
+        $this->is_log = true;
+        parent::__construct($db, $validation);
+    }
     /**
      * saveArrayOfDomicilios
      * 

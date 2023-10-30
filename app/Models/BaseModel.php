@@ -27,6 +27,13 @@ class BaseModel extends Model
     protected $limit = 0;
 
     /**
+     * El usuario corriente (puede ser nulo)
+     */
+    protected $me = null;
+
+    protected $is_log = false;
+
+    /**
      * Model constructor.
      *
      * Override: Carga de los helpers
@@ -39,6 +46,9 @@ class BaseModel extends Model
         parent::__construct($db, $validation);
 
         helper('general');
+
+        if ( $this->is_log )
+            $this->me = service('whoami')->userName();
     }
 
     /**

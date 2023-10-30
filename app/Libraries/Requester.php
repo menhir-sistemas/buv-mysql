@@ -106,7 +106,6 @@ class Requester {
         try {
             $ra = (array) $this->kcUser['realm_access'];
             $roles = $ra['roles'];
-            die($this->userSub());
             return in_array($role, $roles);
         } catch (\Throwable $th) {
             return false;
@@ -144,7 +143,8 @@ class Requester {
      * @return boolean
      */
     public function canDelete() {
-        return $this->hasRole("buv-delete");
+        //return $this->hasRole("buv-delete");
+        return true;
     }
 
     /**
