@@ -101,11 +101,12 @@ class BaseModel extends Model
             $me = service('whoami')->userName();
             $logsModel = new LogsModel();
             $logsModel->insert ([
-                'op'     => 'I',
-                'id_rec' => $newData,
-                'user'   => $me,
-                'prev'   => null,
-                'post'   => json_encode($data)
+                'op'          => 'I',
+                'table_name'  => $this->table,
+                'id_rec'      => $newData,
+                'user'        => $me,
+                'prev'        => null,
+                'post'        => json_encode($data)
             ]);
         }
 
@@ -134,11 +135,12 @@ class BaseModel extends Model
             $me = service('whoami')->userName();
             $logsModel = new LogsModel();
             $logsModel->insert ([
-                'op'     => 'I',
-                'id_rec' => $newData,
-                'user'   => $me,
-                'prev'   => $prev,
-                'post'   => json_encode($data)
+                'op'          => 'U',
+                'table_name'  => $this->table,
+                'id_rec'      => $id,
+                'user'        => $me,
+                'prev'        => $prev,
+                'post'        => json_encode($data)
             ]);
         }
 
@@ -166,11 +168,12 @@ class BaseModel extends Model
             $me = service('whoami')->userName();
             $logsModel = new LogsModel();
             $logsModel->insert ([
-                'op'     => 'D',
-                'id_rec' => $id,
-                'user'   => $me,
-                'prev'   => $prev,
-                'post'   => null
+                'op'          => 'D',
+                'table_name'  => $this->table,
+                'id_rec'      => $id,
+                'user'        => $me,
+                'prev'        => $prev,
+                'post'        => null
             ]);
         }
 
