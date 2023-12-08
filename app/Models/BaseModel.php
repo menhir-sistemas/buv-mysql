@@ -217,6 +217,20 @@ class BaseModel extends Model
     }
 
     /**
+     * Elimino los parámetros no relacionados con un filtro
+     */
+    public function removeNonFilterKeys(array $params) {
+        $retVal = [];
+        foreach ($params as $key => $value) {
+            if (array_search($key, $this->nonFilterKeys) !== false) {
+                continue;
+            }
+            $retVal[$key] = $value;
+        }
+        return $retVal;
+    }
+
+    /**
      * setIndexFilter.
      *
      * Si hay filtro, lo aplica

@@ -266,4 +266,25 @@ class Buv extends BaseApiController
         return $this->respond(["userInfo" =>service('whoami')->getUserInfo()]);
     }
 
+    public function getCount() {
+        try {
+            if ( $this->requiresRootForMutable && !service('whoami')->canGet() )
+                return $this->respond([],ResponseInterface::HTTP_UNAUTHORIZED);       
+        } catch (\Throwable $th) {
+            return $this->respond(ResponseInterface::HTTP_UNAUTHORIZED);
+        }
+
+        try {
+            $params = $this->request->getGet();
+            // Elimino los limites y order
+            $params = $this->model->removeNonFilterKeys($params);
+    
+            $result = $this->model->index($params);
+    
+            return $this->respond(["count" => count($result)]);
+        } catch (\Throwable $th) {
+            return $this->respond(['error' => $th->getMessage()], ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
