@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use CodeIgniter\Database\ConnectionInterface;
+use CodeIgniter\Validation\ValidationInterface;
+
+
 class BUVDataModel extends BaseModel
 {
     protected $DBGroup          = 'default';
@@ -10,7 +14,7 @@ class BUVDataModel extends BaseModel
     protected $useAutoIncrement = true;
     protected $insertID         = 0;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = false;
     protected $allowedFields    = [];
 
@@ -19,7 +23,7 @@ class BUVDataModel extends BaseModel
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $deletedField  = '';
+    protected $deletedField  = 'deleted_at';
 
     // Validation
     protected $validationRules      = [];
@@ -38,6 +42,14 @@ class BUVDataModel extends BaseModel
     protected $afterFind      = [ 'addDomicilios' ];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    protected $is_log = true;
+
+    public function __construct(ConnectionInterface &$db = null, ValidationInterface $validation = null)
+    {
+        $this->is_log = true;
+        parent::__construct($db, $validation);
+    }
 
     /**
      * Migra una fila entera
@@ -171,7 +183,7 @@ class BUVDataModel extends BaseModel
     public function deleteRec($id)
     {
         BuvDomicilioModel::saveArrayOfDomicilios($id,[]);
-        return $this->delete($id);
+        return parent::deleteRec($id);
     }
 
 

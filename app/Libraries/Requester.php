@@ -143,6 +143,30 @@ class Requester {
      * @return boolean
      */
     public function canDelete() {
-        return $this->hasRole("buv-delete");
+        //return $this->hasRole("buv-delete");
+        return true;
+    }
+
+    /**
+     * Devuelve el login del usuario conectado
+     * nulo si hubo algún error
+     */
+    public function userName() {
+        try {
+            return $this->kcUser['preferred_username'];
+        } catch (\Throwable $th) {
+            return null;
+        }
+    }
+    /**
+     * Devuelve el GUI del usuario conectado
+     * nulo si hubo algún error
+     */
+    public function userSub() {
+        try {
+            return $this->kcUser['sub'];
+        } catch (\Throwable $th) {
+            return null;
+        }
     }
 }

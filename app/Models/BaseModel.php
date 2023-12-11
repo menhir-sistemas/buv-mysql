@@ -27,6 +27,13 @@ class BaseModel extends Model
     protected $limit = 0;
 
     /**
+     * El usuario corriente (puede ser nulo)
+     */
+    protected $me = null;
+
+    protected $is_log = false;
+
+    /**
      * Model constructor.
      *
      * Override: Carga de los helpers
@@ -39,6 +46,7 @@ class BaseModel extends Model
         parent::__construct($db, $validation);
 
         helper('general');
+
     }
 
     /**
@@ -87,7 +95,22 @@ class BaseModel extends Model
      */
     public function createRec($data)
     {
-        return $this->insert($data);
+        $newData = $this->insert($data);
+        if ( $this->is_log ) {
+            // Grabo log
+            $me = service('whoami')->userName();
+            $logsModel = new LogsModel();
+            $logsModel->insert ([
+                'op'          => 'I',
+                'table_name'  => $this->table,
+                'id_rec'      => $newData,
+                'user'        => $me,
+                'prev'        => null,
+                'post'        => json_encode($data)
+            ]);
+        }
+
+        return $newData;
     }
 
     /**
@@ -102,7 +125,27 @@ class BaseModel extends Model
      */
     public function updateRec($id, $data)
     {
-        return $this->update($id, $data);
+        if ( $this->is_log ){
+            $prev = $this->previousData($id);
+        }
+
+        $newData = $this->update($id, $data);
+        if ( $this->is_log ) {
+            // Grabo log
+            $me = service('whoami')->userName();
+            $logsModel = new LogsModel();
+            $logsModel->insert ([
+                'op'          => 'U',
+                'table_name'  => $this->table,
+                'id_rec'      => $id,
+                'user'        => $me,
+                'prev'        => $prev,
+                'post'        => json_encode($data)
+            ]);
+        }
+
+        return $newData;
+       
     }
 
     /**
@@ -116,7 +159,34 @@ class BaseModel extends Model
      */
     public function deleteRec($id)
     {
-        return $this->delete($id);
+        if ( $this->is_log ){
+            $prev = $this->previousData($id);
+        }
+        $ok = $this->delete($id);
+        if ( $this->is_log ) {
+            // Grabo log
+            $me = service('whoami')->userName();
+            $logsModel = new LogsModel();
+            $logsModel->insert ([
+                'op'          => 'D',
+                'table_name'  => $this->table,
+                'id_rec'      => $id,
+                'user'        => $me,
+                'prev'        => $prev,
+                'post'        => null
+            ]);
+        }
+
+        return $ok;
+
+    }
+
+    /**
+     * Devuelve el registro previo
+     */
+    protected function previousData($id) {
+        $prevData = $this->find($id);
+        return json_encode($prevData);
     }
 
     /**
@@ -144,6 +214,20 @@ class BaseModel extends Model
     protected function setIndexSelect()
     {
         return $this->select();
+    }
+
+    /**
+     * Elimino los parámetros no relacionados con un filtro
+     */
+    public function removeNonFilterKeys(array $params) {
+        $retVal = [];
+        foreach ($params as $key => $value) {
+            if (array_search($key, $this->nonFilterKeys) !== false) {
+                continue;
+            }
+            $retVal[$key] = $value;
+        }
+        return $retVal;
     }
 
     /**
