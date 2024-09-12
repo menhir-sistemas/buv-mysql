@@ -42,6 +42,10 @@ class BaseApiController extends ResourceController
         try {
             // El header de authorization 
             $authHeader = $request->getHeader('Authorization')->getValueLine();
+
+            // Chequeo de donde proviene
+            $tokenData = dataFromJWT($authHeader);
+            
             service('whoami')->setHeader($authHeader);
         } catch (\Throwable $th) {
             $this->me = null;

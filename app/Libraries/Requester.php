@@ -42,6 +42,7 @@ class Requester {
 
     protected function checkValidToken($header) {
         $cfg = Config('Keycloak');
+        $adCfg = Config('ActiveDirectory');
 
         $pk = $cfg->publicKey;
 
@@ -61,8 +62,10 @@ class Requester {
         try {
             return (array) JWT::decode($token, new Key("-----BEGIN PUBLIC KEY-----\n$pk\n-----END PUBLIC KEY-----\n", 'RS256'));
         } catch (\Exception $ex) {
+            // Tengo que chequear si no es de A/D
+            $adData = (array) JWT::decode($token, new Key($adCfg->adSeed, $adCfg->adAlg));
             // 401
-            return null;
+            return $adData;
         }
 
         return null;
