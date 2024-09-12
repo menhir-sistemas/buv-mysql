@@ -155,9 +155,14 @@ class Buv extends BaseApiController
     {
         $data = $this->sanitize((array)$data);
         // Inserto en keycloak
-        $newData = $this->createKCUser($data);
+        if ( !service('whoami')->isADUser() ) {
+            $newData = $this->createKCUser($data);
+            $data['_id'] = $newData['id'];
+        } else {
+            // TODO: ver que hay que poner acá
+            $data['_id'] = '------';
+        }
 
-        $data['_id'] = $newData['id'];
 
         return parent::createRec($data);
     }
@@ -185,8 +190,8 @@ class Buv extends BaseApiController
     public function deleteRec($id)
     {
         $data = $this->model->find($id);
-
-        $this->deleteKCUSer($data['_id']);
+        if ( !service('whoami')->isADUser() )
+            $this->deleteKCUSer($data['_id']);
         return parent::deleteRec($id);
     }
 
@@ -220,12 +225,14 @@ class Buv extends BaseApiController
 
         $userData = $this->kcDataFromData($data);
 
-        $this->updateKCUSer($userData);
+        if ( !service('whoami')->isADUser() )
+            $this->updateKCUSer($userData);
         $data['id'] = $id;
 
-        if ( $this->kcPassword != null) {
-            $this->updateKCCredentials($data['_id']);
-        }
+        if ( !service('whoami')->isADUser() )           
+            if ( $this->kcPassword != null) {
+                $this->updateKCCredentials($data['_id']);
+            }
       
         return parent::updateRec($id,$data);
 

@@ -172,4 +172,11 @@ class Requester {
             return null;
         }
     }
+
+    /**
+     * Devuelve si el usuario fue validado por A/D
+     */
+    public function isADUser() {
+        return $this->kcUser['iss'] == Config('ActiveDirectory')->adIssuer;
+    }
 }
