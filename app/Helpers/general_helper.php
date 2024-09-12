@@ -65,3 +65,7 @@ function getObjKey(string $key, object &$objt, bool $deleteKey = true)
     }
 }
 
+function dataFromJWT($data) {
+    return  (array) json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $data)[1]))));
+}
+
